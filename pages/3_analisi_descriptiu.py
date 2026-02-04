@@ -85,9 +85,9 @@ with tab1:
     st.write("En aquest gràfic veiem que a mesura que la inversio acumulada i la facturació augmenten, el percentatge d'exportacions creix.")
     
    
-   # Reorganitzar a format llarg per apilar
+    # Reorganitzar a format llarg per apilar
    
-   df_long = df.melt(
+    df_long = df.melt(
     id_vars="Any",
     value_vars=["Inversio_Captada_Acumulada_MEUR", "Pujada_Inversio_Absoluta"],
     var_name="Tipus_Inversio",
@@ -178,6 +178,7 @@ with tab2:
     st.write("""Amb aquest gràfic queda clar que el gènere per excelència en el sector dels videojocs es el d'acció, tant globalment com a Europa i als Estat Units, i que el mercat segueix els mateixos patrons sigui als Estat Units, a Europa o globalment.
                 Aquest fet no ha cambiat en els últims 8 anys.
                 En conclusió el gènere que pot reportar més beneficis a un estudi de videojocs es el d'acció.""")    
+
 
 
 
