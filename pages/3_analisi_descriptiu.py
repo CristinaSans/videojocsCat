@@ -133,12 +133,14 @@ with tab2:
         xaxis_title="Gènere",
         yaxis_title="Vendes (M€)",
         legend_title="Tipus de vendes",
-        xaxis_tickangle=45
+        xaxis_tickangle=45,
+        legend=dict( orientation="h", yanchor="bottom", y=-0.3, # ajusta la distància vertical xanchor="center", x=0.5 )
     )
     st.plotly_chart(fig9)
     
     st.write("""Amb aquest gràfic queda clar que el gènere per excelència en el sector dels videojocs es el d'acció, tant globalment com a Europa i als Estat Units, i que el mercat segueix els mateixos patrons sigui als Estat Units, a Europa o globalment.
                 Aquest fet no ha cambiat en els últims 8 anys.
                 En conclusió el gènere que pot reportar més beneficis a un estudi de videojocs es el d'acció.""")    
+
 
 
