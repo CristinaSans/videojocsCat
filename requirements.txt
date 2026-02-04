@@ -1,8 +1,7 @@
 streamlit
 pandas
 numpy
-matplotlib.pyplot
-plotly.express
-plotly.graph_objects
-sklearn.linear_model
+matplotlib
+plotly
+sklearn
 seaborn
