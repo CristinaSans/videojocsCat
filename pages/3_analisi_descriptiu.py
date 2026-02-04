@@ -9,7 +9,7 @@ st.title(":bar_chart: Analisi Descriptiu")
 
 tab1, tab2 = st.tabs(["Videojocs Cat", "Vendes gènere"])
 
-df= pd.read_csv("./dat/videojocsCat.csv", sep =";")
+df= pd.read_csv("./dat/output/videojocsCat.csv", sep =";")
 
 df["Pujada_Inversio_Absoluta"] = (
     df["Pujada_Inversio_Absoluta"]
@@ -97,7 +97,7 @@ with tab1:
       
 with tab2:
     
-    df2= pd.read_csv("./dat/sales_genre.csv", sep =";")
+    df2= pd.read_csv("./dat/output/sales_genre.csv", sep =";")
     
     fig6 = px.box(
     df2,
@@ -140,4 +140,5 @@ with tab2:
     st.write("""Amb aquest gràfic queda clar que el gènere per excelència en el sector dels videojocs es el d'acció, tant globalment com a Europa i als Estat Units, i que el mercat segueix els mateixos patrons sigui als Estat Units, a Europa o globalment.
                 Aquest fet no ha cambiat en els últims 8 anys.
                 En conclusió el gènere que pot reportar més beneficis a un estudi de videojocs es el d'acció.""")    
+
 
