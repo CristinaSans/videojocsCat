@@ -1,6 +1,8 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="Analisi descriptiu")
 st.sidebar.header("Analisi descriptiu")
@@ -17,80 +19,115 @@ df["Pujada_Inversio_Absoluta"] = (
     .astype(float)
 )
 with tab1:
-    
-    fig4 = px.bar(
-    df,
-    x="Any",
-    y=["Facturacio_MEUR", "Treballadors", "Videojocs_Produits"],
-    barmode="group",
-    title="Comparació anual entre variables clau"
-    )
+        
+    fig4_sub = make_subplots(rows=1, cols=1)
 
-    fig4.update_layout(
+    for col in ["Facturacio_MEUR", "Treballadors", "Videojocs_Produits"]:
+        fig4_sub.add_trace(
+            go.Bar(
+                x=df["Any"],
+                y=df[col],
+                name=col,
+                showlegend=True
+            )
+        )
+
+    fig4_sub.update_layout(
+        title="Comparació anual entre variables clau",
         xaxis_title="Any",
         yaxis_title="Valor",
-        legend_title="Variable"
+        legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.2)
     )
 
-    st.plotly_chart(fig4)
+    st.plotly_chart(fig4_sub, use_container_width=True)
 
     st.write("Continuem veien que la tendencia es que a mes facturació, mes estudis i mes treballadors hi ha al sector i que aquesta tendencia es al alça.")
     
     
+    fig5_sub = make_subplots(rows=1, cols=1)
 
-    fig5 = px.scatter(
-        df,
-        x="Inversio_Captada_Acumulada_MEUR",
-        y="Facturacio_MEUR",
-        size="Treballadors",
-        color="Percentatge_Exportacio",
-        color_continuous_scale=px.colors.diverging.RdBu,
-        hover_name="Any",
-        title="Relació entre inversió, facturació i estructura del sector"
+    fig5_sub.add_trace(
+        go.Scatter(
+            x=df["Inversio_Captada_Acumulada_MEUR"],
+            y=df["Facturacio_MEUR"],
+            mode="markers",
+            marker=dict(
+                size=df["Treballadors"],
+                sizemode="area",
+                sizeref=max(df["Treballadors"]) / 40,   # fa visibles les bombolles
+                color=df["Percentatge_Exportacio"],
+                colorscale="RdBu",
+                line=dict(width=1, color="black"),       # contorn per fer-les destacar
+                showscale=True
+            ),
+            text=df["Any"],
+            hovertemplate="<b>Any:</b> %{text}<br>"
+                          "Inversió: %{x} M€<br>"
+                          "Facturació: %{y} M€<br>"
+                          "<extra></extra>"
+        )
     )
 
-    fig5.update_layout(
+    fig5_sub.update_layout(
+        title="Relació entre inversió, facturació i estructura del sector",
         xaxis_title="Inversió acumulada (M€)",
-        yaxis_title="Facturació (M€)"
+        yaxis_title="Facturació (M€)",
+        legend=dict(
+            orientation="h",
+            x=0.5,
+            xanchor="center",
+            y=-0.2
+        )
     )
 
-    st.plotly_chart(fig5)
+    st.plotly_chart(fig5_sub, use_container_width=True)
         
     st.write("En aquest gràfic veiem que a mesura que la inversio acumulada i la facturació augmenten, el percentatge d'exportacions creix.")
     
-    # Reorganitzar a format llarg per apilar
-    df_long = df.melt(
-        id_vars="Any",
-        value_vars=["Inversio_Captada_Acumulada_MEUR", "Pujada_Inversio_Absoluta"],
-        var_name="Tipus_Inversio",
-        value_name="Inversio"
+   
+   # Reorganitzar a format llarg per apilar
+   
+   df_long = df.melt(
+    id_vars="Any",
+    value_vars=["Inversio_Captada_Acumulada_MEUR", "Pujada_Inversio_Absoluta"],
+    var_name="Tipus_Inversio",
+    value_name="Inversio"
     )
 
-    # Gràfic de barres apilades
-    fig8 = px.bar(
-        df_long,
-        x="Any",
-        y="Inversio",
-        color="Tipus_Inversio",
-        barmode="stack",
-        title="Creixement de la inversió: barres apilades + línia"
+    fig8_sub = make_subplots(rows=1, cols=1)
+
+    for tipus in df_long["Tipus_Inversio"].unique():
+        subset = df_long[df_long["Tipus_Inversio"] == tipus]
+        fig8_sub.add_trace(
+            go.Bar(
+                x=subset["Any"],
+                y=subset["Inversio"],
+                name=tipus,
+                showlegend=True
+            )
+        )
+
+    fig8_sub.add_trace(
+        go.Scatter(
+            x=df["Any"],
+            y=df["Pujada_Inversio_Absoluta"],
+            mode="lines+markers",
+            name="Pujada anual d'inversió",
+            line=dict(color="black", width=3),
+            showlegend=True
+        )
     )
 
-    # Afegir línia de la inversió acumulada
-    fig8.add_scatter( x=df["Any"],
-                      y=df["Pujada_Inversio_Absoluta"],
-                      mode="lines+markers",
-                      name="Pujada anual d'inversió", 
-                      line=dict(color="black", width=3) 
-     )
-
-
-    fig8.update_layout(
+    fig8_sub.update_layout(
+        title="Creixement de la inversió: barres apilades + línia",
         xaxis_title="Any",
         yaxis_title="Inversió (M€)",
-        legend_title="Tipus d'inversió"
+        legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.2)
     )
-    st.plotly_chart(fig8)
+
+    st.plotly_chart(fig8_sub, use_container_width=True)
+
+    
     st.write("En aquest gràfic veiem que la tendencia anual en la inversió captada en el sector fluctua, tot i que segueix pujant, amb una pujada 10 punts menor l'any 2024 respecte a l'any anterior.")
     
 
@@ -128,20 +165,11 @@ with tab2:
         title="Vendes per gènere i mercat",
         barmode="stack"
     )
-
     fig9.update_layout(
-    xaxis_title="Gènere",
-    yaxis_title="Vendes (M€)",
-    legend_title="Tipus de vendes",
-    xaxis_tickangle=45,
-    legend=dict(
-        orientation="h",
-        x=0.5,
-        xanchor="center",
-        y=-0.25,     # posició sota el gràfic
-        yanchor="top"
-        ),
-        margin=dict(b=140)  # espai extra perquè Streamlit no la talli
+        xaxis_title="Gènere",
+        yaxis_title="Vendes (M€)",
+        legend_title="Tipus de vendes",
+        xaxis_tickangle=45,    
     )
 
     st.plotly_chart(fig9, use_container_width=True)
@@ -150,6 +178,7 @@ with tab2:
     st.write("""Amb aquest gràfic queda clar que el gènere per excelència en el sector dels videojocs es el d'acció, tant globalment com a Europa i als Estat Units, i que el mercat segueix els mateixos patrons sigui als Estat Units, a Europa o globalment.
                 Aquest fet no ha cambiat en els últims 8 anys.
                 En conclusió el gènere que pot reportar més beneficis a un estudi de videojocs es el d'acció.""")    
+
 
 
 
